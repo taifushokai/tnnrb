@@ -2,6 +2,7 @@
 #
 #= Simple Chain YAML input
 
+require 'pp'
 require 'optparse'
 require 'yaml'
 require 'numo/narray'
@@ -38,8 +39,6 @@ class SimpleChain < Chainer::Chain
     @optimizer.setup(self)
 
     @desc = {'geometry' => geometry}
-    @desc['desc_path']  = @desc['geometry'] + ".yaml"
-    @desc['net_path']   = @desc['geometry'] + ".net"
     @desc['last_score'] = 0.0
     @desc['learn_time'] = 0.0
     @desc['learn_count'] = 0
@@ -93,18 +92,23 @@ class SimpleChain < Chainer::Chain
     if @learn_start
       @desc['learn_time'] += (Time::now - @learn_start)
       @desc['learn_count'] += @learn_count
-      Chainer::Serializers::MarshalSerializer.save_file(@desc['net_path'], self)
+      Chainer::Serializers::MarshalSerializer.save_file(@desc['geometry'] + ".net", self)
+      open(@desc['geometry'] + ".pp", "w") do |wh|
+        $stdout = wh
+        pp self
+        $stdout = STDOUT
+      end
     end
-    YAML.dump(@desc, open(@desc['desc_path'], "w"))
+    YAML.dump(@desc, open(@desc['geometry'] + ".yaml", "w"))
   end
 
   #== 各記録、ネットのファイルからの読み込み
   def load()
-    if FileTest::exist?(@desc['desc_path'])
-      @desc = YAML.load_file(@desc['desc_path'])
+    if FileTest::exist?(@desc['geometry'] + ".yaml")
+      @desc = YAML.load_file(@desc['geometry'] + ".yaml")
     end
-    if FileTest::exist?(@desc['net_path'])
-      Chainer::Serializers::MarshalDeserializer.load_file(@desc['net_path'], self)
+    if FileTest::exist?(@desc['geometry'] + ".net")
+      Chainer::Serializers::MarshalDeserializer.load_file(@desc['geometry'] + ".net", self)
     end
     @load_time = Time::now.to_f
   end
@@ -116,11 +120,18 @@ def main
   loopsize = 1000
   initflag = false
   dumpflag = false
+  accrate  = 0.1 # acceptable rate
   plotflag = false
+  plotprm  = [0, 0, 1] # ry, rx, sx
+  optionsA = []
 
-  req = YAML::load_stream(STDIN)[0]
-  mode = req["mode"] if req["mode"]
-  optionsA = req["options"].to_s.split(/\s+/)
+  begin
+    req = YAML::load_stream(STDIN)[0]
+    mode = req["mode"] if req["mode"]
+    optionsA = req["options"].to_s.split(/\s+/)
+  rescue
+    optionsA = ["--help"]
+  end
 
   opts = OptionParser.new
   opts.on("-m MODE", "--mode MODE", "learn,check,lcheck,answer") do |val|
@@ -139,18 +150,24 @@ def main
       initflag = true
     end
   end
-  opts.on("-d [false]", "--dump [false]", "dump") do |val|
+  opts.on("-d [false|<accrate>]", "--dump [false|<accrate>]", "dump") do |val|
     if val == "false"
       dumpflag = false
     else
       dumpflag = true
+      if /([\d\.]+)/ =~ val
+        accrate = $1.to_f
+      end
     end
   end
-  opts.on("-p [false]", "--plot [false]", "plot") do |val|
+  opts.on("-p [false|<ry>,<rx>,<sx>]", "--plot [false|<ry>,<rx>,<sx>]", "plot") do |val|
     if val == "false"
       plotflag = false
     else
       plotflag = true
+      if /(\d+),(\d+),(\d+)/ =~ val
+        plotprm  = [$1.to_i, $2.to_i, $3.to_i] # ry, rx, sx
+      end
     end
   end
   optionsA.concat(ARGV)
@@ -163,12 +180,11 @@ def main
     learn(model, req['xA'], req['yA'], dumpflag, loopsize)
     model.save()
   when 'check'
-    score = check(model, req['xA'], req['yA'], dumpflag, plotflag)
+    score = check(model, req['xA'], req['yA'], dumpflag, accrate, plotflag, plotprm)
     model.last_score = score
-    model.save()
   when 'lcheck'
     learn(model, req['xA'], req['yA'], dumpflag, loopsize)
-    score = check(model, req['xA'], req['yA'], dumpflag, plotflag)
+    score = check(model, req['xA'], req['yA'], dumpflag, accrate, plotflag, plotprm)
     model.last_score = score
     model.save()
   when 'answer'
@@ -191,43 +207,46 @@ def learn(model, xA, yA, dumpflag, loopsize)
 end
 
 #=== 学習のチェック
-def check(model, xA, yA, dumpflag, plotflag)
+def check(model, xA, yA, dumpflag, accrate, plotflag, plotprm)
   xN = Numo::SFloat.cast(xA)
   xV = Chainer::Variable.new(xN)
   fV = model.forward(xV)
   ok = 0
-  yA.each_with_index do |y, ix|
-    f = fV.data[ix, 0]
-    if y[0] == 0.0
-      if f == 0.0
-        ok += 1
-        eql = "=="
-      else
-        eql = "<>"
-      end
-    else
-      if ((f - y[0]) / y[0]).abs < 0.1
-        ok += 1
-        eql = "=="
-      else
-        eql = "<>"
-      end
+  cnt = 0
+  sum = 0.0
+  yA.each do |y|
+    cnt += y.size
+    y.each do |yi|
+      sum += yi.abs
     end
-    STDERR.printf("%d)\t%6.2f %s %6.2f\n", ix, f, eql, y[0]) if dumpflag
+  end
+  ave = sum / cnt
+  yA.each_with_index do |y, ix|
+    (0...y.size).each do |ry|
+      f = fV.data[ix, ry]
+      if ((f - y[ry]).abs / ave) < accrate
+        ok += 1
+        eql = "=="
+      else
+        eql = "<>"
+      end
+      STDERR.printf("%d,%d)\t%6.2f %s %6.2f\n", ix, ry, f, eql, y[ry]) if dumpflag
+    end
   end
   score = ok.to_f / yA.size
   printf("CHECK RESULT: %d/%d = %.1f%%\n\n", ok, yA.size, score * 100)
 
   if plotflag
+    (ry, rx, sx) = *plotprm
     datpath = "#{model.geometry()}.dat"
     pngpath = "#{model.geometry()}.png"
-    if xA[0].to_a.size <= 1
+    if xA[rx].to_a.size <= 1
       open(datpath, "w") do |wh|
         xA.each_with_index do |x, ix|
-          x0 = x[0]
-          y0 = yA[ix][0]
-          f = fV.data[ix, 0]
-          wh.printf("%f %f %f\n", x0, y0, f)
+          xp = x[rx].to_f
+          yp = yA[ix][ry].to_f
+          fp = fV.data[ix, ry].to_f
+          wh.printf("%f %f %f\n", xp, yp, fp)
         end
       end
       IO::popen("gnuplot > /dev/null 2>&1", "w") do |ph|
@@ -240,18 +259,17 @@ EOT
     else
       open(datpath, "w") do |wh|
         xA.each_with_index do |x, ix|
-          x0 = x[0]
-          x1 = x[1]
-          y0 = yA[ix][0]
-          f = fV.data[ix, 0]
-          wh.printf("%f %f %f %f\n", x0, x1, y0, f)
+          xp = x[rx].to_f
+          xq = x[sx].to_f
+          yp = yA[ix][ry].to_f
+          fp = fV.data[ix, ry].to_f
+          wh.printf("%f %f %f %f\n", xp, xq, yp, fp)
         end
       end
       IO::popen("gnuplot > /dev/null 2>&1", "w") do |ph|
         ph.print(<<EOT)
 set terminal png
 set output '#{pngpath}'
-#splot "#{datpath}" using 1:2:3 w lp title "y", "#{datpath}" using 1:2:4 w lp title "f(x)"
 splot "#{datpath}" using 1:2:3 w p title "y", "#{datpath}" using 1:2:4 w p title "f(x)"
 EOT
       end
