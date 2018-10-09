@@ -115,15 +115,15 @@ class SimpleChain < Chainer::Chain
 end
 
 def main
-  mode     = "learn"
-  geometry = "X-1"
-  loopsize = 1000
-  initflag = false
-  dumpflag = false
-  accrate  = 0.1 # acceptable rate
-  plotflag = false
-  plotprm  = [0, 0, 1] # ry, rx, sx
-  optionsA = []
+  mode      = "learn"
+  geometry  = "X-1"
+  epochsize = 1000
+  initflag  = false
+  dumpflag  = false
+  accrate   = 0.1 # acceptable rate
+  plotflag  = false
+  plotprm   = [0, 0, 1] # ry, rx, sx
+  optionsA  = []
 
   begin
     req = YAML::load_stream(STDIN)[0]
@@ -140,8 +140,8 @@ def main
   opts.on("-g abcX-9-9-9-9-9", "--geometry abcX-9-9-9-9-9", "NN geometry , default X-1") do |val|
     geometry = val
   end
-  opts.on("-l LOOP", "--loop LOOP", "learning loop size") do |val|
-    loopsize = val.to_i
+  opts.on("-e EPOCHS", "--epoch EPOCHS", "epoch size") do |val|
+    epochsize = val.to_i
   end
   opts.on("-i [false]", "--init [false]", "initialize net file") do |val|
     if val == "false"
@@ -177,13 +177,13 @@ def main
   model.load() unless initflag
   case mode
   when 'learn'
-    learn(model, req['xA'], req['yA'], dumpflag, loopsize)
+    learn(model, req['xA'], req['yA'], dumpflag, epochsize)
     model.save()
   when 'check'
     score = check(model, req['xA'], req['yA'], dumpflag, accrate, plotflag, plotprm)
     model.last_score = score
   when 'lcheck'
-    learn(model, req['xA'], req['yA'], dumpflag, loopsize)
+    learn(model, req['xA'], req['yA'], dumpflag, epochsize)
     score = check(model, req['xA'], req['yA'], dumpflag, accrate, plotflag, plotprm)
     model.last_score = score
     model.save()
@@ -193,13 +193,13 @@ def main
 end
 
 #=== 学習
-def learn(model, xA, yA, dumpflag, loopsize)
+def learn(model, xA, yA, dumpflag, epochsize)
   xN = Numo::SFloat.cast(xA)
   xV = Chainer::Variable.new(xN)
   yN = Numo::SFloat.cast(yA)
   yV = Chainer::Variable.new(yN)
   STDERR.print("LEARNING") if dumpflag
-  loopsize.times do |ix|
+  epochsize.times do |ix|
     STDERR.print(".") if dumpflag and (ix % 100 == 0)
     model.learn(xV, yV)
   end
