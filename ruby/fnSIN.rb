@@ -16,7 +16,7 @@ def main
   opts.on("-m MODE", "--mode MODE", "learn,check,lckeck,answer") do |val|
     mode = val
   end
-  opts.on("-o SC-OPTIONS", "--options SC-OPTIONS", "ex) '-g X-1 -i -e 10000'") do |val|
+  opts.on("-o SC-OPTIONS", "--options SC-OPTIONS", "ex) '-g @-1 -i -e 10000'") do |val|
     options = val
   end
   opts.on("-s SPAN", "--span SPAN", "x span") do |val|

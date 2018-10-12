@@ -14,7 +14,7 @@ F = Chainer::Functions
 class SimpleChain < Chainer::Chain
   def initialize(geometry)
     @nuA = []
-    if /\w*?X-([\d\-]+)/ =~ geometry
+    if /\w*?@-([\d\-]+)/ =~ geometry
       geometry = $&
       $1.split("-").each do |nu|
         if nu.to_i < 1
@@ -116,7 +116,7 @@ end
 
 def main
   mode      = "learn"
-  geometry  = "X-1"
+  geometry  = "@-1"
   epochsize = 1000
   initflag  = false
   dumpflag  = false
@@ -137,7 +137,7 @@ def main
   opts.on("-m MODE", "--mode MODE", "learn,check,lcheck,answer") do |val|
     mode = val
   end
-  opts.on("-g abcX-9-9-9-9-9", "--geometry abcX-9-9-9-9-9", "NN geometry , default X-1") do |val|
+  opts.on("-g tag@-9-9-9-9-9", "--geometry tag@-9-9-9-9-9", "NN geometry , default @-1") do |val|
     geometry = val
   end
   opts.on("-e EPOCHS", "--epoch EPOCHS", "epoch size") do |val|

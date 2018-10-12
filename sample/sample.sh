@@ -1,10 +1,10 @@
 #!/bin/bash
 
 for rq in \
-  rqSIN.sh \
-  rqSINSIN.sh \
-  rqXSIN.sh \
-  rqCYLINDER.sh \
+  fnSIN.sh \
+  fnSINSIN.sh \
+  fnXSIN.sh \
+  fnCYLINDER.sh \
   ; do cmd="time -p ./$rq"; echo \$ $cmd; $cmd; echo; done
 
 
