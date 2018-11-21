@@ -1,0 +1,37 @@
+環境の構築
+●Linux等の場合
+Ubuntu 16, 18 の他、おおよそRuby2.3以降が使用できればOK。
+
+Ruby 2.6.0-preview2 Released（jitは効果が見えないが他のヴァージョンより速い）
+https://www.ruby-lang.org/ja/news/2018/05/31/ruby-2-6-0-preview2-released/
+
+red-chainer-0.3.2
+https://github.com/red-data-tools/red-chainer
+$ sudo gem install red-chainer
+
+Try neural network with ruby
+$ git clone https://github.com/taifushokai/tnnrb.git
+
+●Windows10の場合
+Bash on Ubuntu on Windows を利用する。
+
+# apt update
+# apt upgrade
+# cat /etc/lsb-release
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=16.04
+DISTRIB_CODENAME=xenial
+DISTRIB_DESCRIPTION="Ubuntu 16.04.5 LTS"
+
+# apt install build-essential
+# apt install gnuplot-nox
+# apt install ruby-dev
+# ruby -v
+ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
+# gem install red-chainer
+# git clone https://github.com/taifushokai/tnnrb.git
+# cd tnnrb/sample
+# ./sample.sh
+実行結果を見るには以下をエクスプローラで参照する。
+C:\Users\(ユーザー名)\AppData\Local\lxss\root\tnnrb\sample
+

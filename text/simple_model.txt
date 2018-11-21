@@ -1,0 +1,11 @@
+単純なモデルで試す
+$ ./rqSIN.rb -m lcheck -o '-g X-10-1 -i -l 10000 -p' | ./sc.rb 
+CHECK RESULT: 63/129 = 48.8%
+
+
+$ ./rqSINSIN.rb -m lcheck -o '-g X-10-1 -i -l 10000 -p' | ./sc.rb 
+CHECK RESULT: 967/4225 = 22.9%
+
+
+$ ./rqCYKUBDER.rb -m lcheck -o '-g X-16-16-1 -i -l 10000 -p' | ./sc.rb 
+CHECK RESULT: 176/1089 = 16.2%
