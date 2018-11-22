@@ -1,4 +1,5 @@
 単純なモデルで試す
+
 $ ./rqSIN.rb -m lcheck -o '-g X-10-1 -i -l 10000 -p' | ./sc.rb 
 CHECK RESULT: 63/129 = 48.8%
 
