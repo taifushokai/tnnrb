@@ -1,5 +1,10 @@
 環境の構築
 
+人工ニューロンの動作を確認するためのスクリプトは github に置きました。言語として Ruby、フレームワークとして red-chaienr のインストールが必要です。グラフ作成には gnuplot を使わせてもらっています。
+red-chaienr が依存する Numo のインストールでコンパイルが必要になるため、基本的な開発環境も必要です。
+Windows の場合は "Bash on Ubuntu on Windows" を使って Ubuntu 環境を持ち込んでしまうのが一番楽だと思います。以下は 2018年現在の方法です。
+
+
 ●Linux等の場合
 Ubuntu 16, 18 の他、おおよそRuby2.3以降が使用できればOK。
 
@@ -33,6 +38,6 @@ ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
 # git clone https://github.com/taifushokai/tnnrb.git
 # cd tnnrb/sample
 # ./sample.sh
-実行結果を見るには以下をエクスプローラで参照する。
+実行結果のグラフを見るには以下をエクスプローラで参照する。
 C:\Users\(ユーザー名)\AppData\Local\lxss\root\tnnrb\sample
 
