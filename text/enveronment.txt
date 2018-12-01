@@ -41,3 +41,4 @@ ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
 実行結果のグラフを見るには以下をエクスプローラで参照する。
 C:\Users\(ユーザー名)\AppData\Local\lxss\root\tnnrb\sample
 
+ git config --global core.autoCRLF false
