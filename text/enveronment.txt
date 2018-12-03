@@ -5,7 +5,7 @@ red-chaienr が依存する Numo のインストールでコンパイルが必�
 Windows の場合は "Bash on Ubuntu on Windows" を使って Ubuntu 環境を持ち込んでしまうのが一番楽だと思います。以下は 2018年現在の方法です。
 
 
-●Linux等の場合
+・Linux等の場合
 Ubuntu 16, 18 の他、おおよそRuby2.3以降が使用できればOK。
 
 Ruby 2.6.0-preview2 Released（jitは効果が見えないが他のヴァージョンより速い）
@@ -18,7 +18,7 @@ $ sudo gem install red-chainer
 Try neural network with ruby
 $ git clone https://github.com/taifushokai/tnnrb.git
 
-●Windows10の場合
+・Windows10の場合
 Bash on Ubuntu on Windows を利用する。
 
 # apt update
