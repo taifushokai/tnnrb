@@ -1,44 +1,57 @@
 環境の構築
 
-人工ニューロンの動作を確認するためのスクリプトは github に置きました。言語として Ruby、フレームワークとして red-chaienr のインストールが必要です。グラフ作成には gnuplot を使わせてもらっています。
-red-chaienr が依存する Numo のインストールでコンパイルが必要になるため、基本的な開発環境も必要です。
-Windows の場合は "Bash on Ubuntu on Windows" を使って Ubuntu 環境を持ち込んでしまうのが一番楽だと思います。以下は 2018年現在の方法です。
+●  Linux等の場合
+まず、プログラム言語として Ruby  が必要です。Ubuntu 16, 18 の他、おおよそRuby2.3以降が使用できれば例題が実行可能です。
+ヴァージョンは以下で確認できます。
+$ ruby -v
+Ruby がインストールされていなければインストールします。（以下は Ubuntu の場合）
+$ sudo apt install ruby
+$ ruby -v
+コンパイルの必要がありますが、執筆時点では Ruby2.5.3 も使用できます。
+https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.3.tar.bz2
 
-
-・Linux等の場合
-Ubuntu 16, 18 の他、おおよそRuby2.3以降が使用できればOK。
-
-Ruby 2.6.0-preview2 Released（jitは効果が見えないが他のヴァージョンより速い）
-https://www.ruby-lang.org/ja/news/2018/05/31/ruby-2-6-0-preview2-released/
-
+フレームワークとして Red Chainer を使わせていただきます。Ruby のパッケージングシステムである gem で取得します。
 red-chainer-0.3.2
 https://github.com/red-data-tools/red-chainer
 $ sudo gem install red-chainer
 
+本書で使用するスクリプトは git で取得します。
 Try neural network with ruby
 $ git clone https://github.com/taifushokai/tnnrb.git
 
-・Windows10の場合
-Bash on Ubuntu on Windows を利用する。
+グラフ作成に gnuplot を使っているため、なければインストールします。
+$ sudo apt install gnuplot
 
-# apt update
-# apt upgrade
-# cat /etc/lsb-release
+サンプルスクリプトは以下のように実行します。
+$ cd tnnrb/sample
+$ ./sample.sh
+
+●  Windows10の場合
+Windows10 の場合、Bash on Ubuntu on Windows を利用するのが簡単です。
+執筆時点では Ubuntu16.04 と同等となりました。
+$ sudo apt update
+$ sudo apt upgrade
+$ cat /etc/lsb-release
 DISTRIB_ID=Ubuntu
 DISTRIB_RELEASE=16.04
 DISTRIB_CODENAME=xenial
 DISTRIB_DESCRIPTION="Ubuntu 16.04.5 LTS"
 
+インストールするもとしては基本的なコンパイル環境（Red Chainer が依存する Numo::NArray のインストールに必要）、X無しのgnuplot、ruby開発環境、そして Red Chainer です。
+$ sudo su -
 # apt install build-essential
-# apt install gnuplot-nox
-# apt install ruby-dev
-# ruby -v
-ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
+#  apt install gnuplot-nox
+#  apt install ruby-dev
 # gem install red-chainer
-# git clone https://github.com/taifushokai/tnnrb.git
-# cd tnnrb/sample
-# ./sample.sh
-実行結果のグラフを見るには以下をエクスプローラで参照する。
-C:\Users\(ユーザー名)\AppData\Local\lxss\root\tnnrb\sample
+# exit
 
- git config --global core.autoCRLF false
+あとは Linux と同様に使用するスクリプトを取得します。
+$ git clone https://github.com/taifushokai/tnnrb.git
+
+サンプルスクリプトは以下のように実行します。
+$ cd tnnrb/sample
+$ ./sample.sh
+
+実行結果のグラフを見るには、以下パスをエクスプローラ等で参照します。
+C:\Users\(ユーザー名)\AppData\Local\lxss\(bashユーザー名)\tnnrb\sample
+
