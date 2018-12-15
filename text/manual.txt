@@ -1,0 +1,54 @@
+fnCYLINDER.rb
+  y = step(x0^2 + x1^2) 円の中にあれば 1 それ以外は 0 の教師データ出力
+  実行例 sample/fnCYLINDER.sh
+    -m, --mode MODE                  learn,check,lcheck,answer
+      それぞれ学習、学習と回答の比較、回答の要求のみ
+    -o, --options SC-OPTIONS         ex) '-g @-1 -i -e 10000'
+      sc.rb へのオプション
+
+fnSIN.rb
+  y = sin(x) の教師データ出力
+  実行例 sample/fnSIN.sh
+    -m, --mode MODE                  learn,check,lckeck,answer
+      それぞれ学習、学習と回答の比較、回答の要求のみ
+    -o, --options SC-OPTIONS         ex) '-g @-1 -i -e 10000'
+      sc.rb へのオプション
+    -s, --span SPAN                  x span
+      教師データの範囲
+    -d, --dsize DSIZE                dividing size
+      教師データの分割数
+
+fnSINSIN.rb
+  y = sin(x0) + sin(x1) の教師データ出力
+  実行例 sample/fnSINSIN.sh
+    -m, --mode MODE                  learn,check,lcheck,answer
+      それぞれ学習、学習と回答の比較、回答の要求のみ
+    -o, --options SC-OPTIONS         ex) '-g @-1 -i -e 10000'
+      sc.rb へのオプション
+
+fnXSIN.rb
+  y = x と y = sin(x) の接続の教師データ出力
+  実行例 sample/fnXSIN.sh
+    -m, --mode MODE                  learn,check,lcheck,answer
+      それぞれ学習、学習と回答の比較、回答の要求のみ
+    -o, --options SC-OPTIONS         ex) '-g @-1 -i -e 10000'
+      sc.rb へのオプション
+
+sc.rb
+  SimpleChain の実装、教師データを学習し、回答する
+    -m, --mode MODE                   learn,check,lcheck,answer
+      それぞれ学習、学習と回答の比較、回答の要求のみ
+    -g, --geometry tag@-9-9-9-9-9     NN geometry , default @-1
+      @の左側
+        識別のための任意の文字列
+      @の右側
+        ネットのジオメトリ、 @ を入力層とみたて、各層のニューロン本数を表す
+    -e, --epoch EPOCHS                epoch size
+      エポック数（学習の繰り返し数）
+    -i, --init [false]                initialize net file
+      学習を初期化する
+    -d, --dump [false|<accrate>]      dump
+      回答値の表示、accrate は正答とする割合
+    -p [false|<ry>,<rx>,<sx>], --plot plot
+      gnuplot への表示 ry 表示するyの列、 rx 表示するxの列、追加表示するxの列
+
